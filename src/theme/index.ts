@@ -70,6 +70,46 @@ export const theme = createTheme({
         root: { fontSize: '1.2rem' },
       },
     },
+    MuiTable: {
+      styleOverrides: {
+        root: { minWidth: 650 },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          fontSize: '1.4rem',
+          padding: theme.spacing(2),
+        }),
+        head: ({ theme }) => ({
+          fontSize: '1.5rem',
+          fontWeight: 600,
+          backgroundColor: theme.palette.grey[50],
+        }),
+      },
+    },
+    MuiTableRow: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          '&:hover': {
+            backgroundColor: theme.palette.action?.hover || theme.palette.grey[50],
+          },
+          transition: theme.transitions.create('background-color', {
+            duration: theme.transitions.duration.shortest,
+          }),
+        }),
+      },
+    },
+    MuiAlert: {
+      styleOverrides: {
+        root: {
+          fontSize: '1.6rem',
+        },
+        message: {
+          fontSize: '1.6rem',
+        },
+      },
+    },
     MuiCssBaseline: {
       styleOverrides: {
         '*': {

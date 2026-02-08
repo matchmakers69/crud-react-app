@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { User } from '../interfaces/User'
 import { API_URL } from '@/config/api'
 import { USER_QUERY_KEYS } from '@/config/queryKeys'
@@ -18,6 +18,17 @@ export const useCreateUserMutation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: USER_QUERY_KEYS.USER_LIST })
+    },
+  })
+}
+
+export const useUsersQuery = () => {
+  return useQuery({
+    queryKey: USER_QUERY_KEYS.USER_LIST,
+    queryFn: async (): Promise<User[]> => {
+      const response = await fetch(`${API_URL}/users`)
+      if (!response.ok) throw new Error('Failed to fetch users')
+      return response.json()
     },
   })
 }
