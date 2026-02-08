@@ -1,19 +1,20 @@
 import { faker } from '@faker-js/faker'
 import { delay, http, HttpResponse } from 'msw'
 import { db } from './db'
+import { API_URL } from '../config/api'
 
 export const handlers = [
-  http.get('https://example.com/user', async () => {
+  http.get(`${API_URL}/users`, async () => {
     await delay(1000)
     const users = await db.user.getAll()
-    return HttpResponse.json({ users })
+    return HttpResponse.json(users)
   }),
-  http.get('https://example.com/user/:id', async ({ params }) => {
+  http.get(`${API_URL}/users/:id`, async ({ params }) => {
     const { id } = params
     const user = await db.user.findFirst({ id })
     return HttpResponse.json({ user })
   }),
-  http.post('https://example.com/user', async ({ request }) => {
+  http.post(`${API_URL}/users`, async ({ request }) => {
     const { firstName, dateOfBirth, lastName } = await request.json()
     await db.user.create({
       firstName,
@@ -31,7 +32,7 @@ export const handlers = [
       },
     })
   }),
-  http.put('https://example.com/user/:id', async ({ request, params }) => {
+  http.put(`${API_URL}/users/:id`, async ({ request, params }) => {
     const { id } = params
     const { firstName, dateOfBirth, lastName } = await request.json()
 
@@ -61,7 +62,7 @@ export const handlers = [
       },
     })
   }),
-  http.delete('https://example.com/user/:id', async ({ params }) => {
+  http.delete(`${API_URL}/users/:id`, async ({ params }) => {
     const { id } = params
 
     const user = await db.user.findFirst({ id })

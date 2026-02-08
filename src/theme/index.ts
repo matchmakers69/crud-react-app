@@ -10,6 +10,66 @@ export const theme = createTheme({
     borderRadius: 8,
   },
   components: {
+    MuiButton: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          padding: '8px 24px',
+          fontSize: '1.6rem',
+          fontWeight: 500,
+          textTransform: 'none',
+          borderRadius: 4,
+          boxShadow: 'none',
+          '&:hover': {
+            boxShadow: '0 2px 3px 0px rgb(0 0 0 / 35%)',
+          },
+          '&.Mui-disabled': {
+            color: theme.palette.text.disabled,
+            background: theme.palette.background.paper,
+            boxShadow: 'unset',
+          },
+        }),
+        containedPrimary: ({ theme }) => ({
+          '&:hover': {
+            backgroundColor: theme.palette.primary.dark,
+          },
+        }),
+        containedSecondary: ({ theme }) => ({
+          '&:hover': {
+            backgroundColor: theme.palette.secondary.dark,
+          },
+        }),
+        outlined: {
+          borderWidth: '1.5px',
+          '&:hover': {
+            borderWidth: '1.5px',
+          },
+        },
+      },
+      defaultProps: {
+        disableElevation: true,
+      },
+    },
+    MuiTextField: {
+      defaultProps: {
+        variant: 'outlined',
+      },
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        root: { fontSize: '1.4rem' },
+        input: { fontSize: '1.4rem' },
+      },
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: { fontSize: '1.4rem' },
+      },
+    },
+    MuiFormHelperText: {
+      styleOverrides: {
+        root: { fontSize: '1.2rem' },
+      },
+    },
     MuiCssBaseline: {
       styleOverrides: {
         '*': {

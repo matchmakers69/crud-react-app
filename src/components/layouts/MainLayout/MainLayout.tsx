@@ -8,14 +8,14 @@ const MainLayout = ({ children }: BaseProps) => {
       component="main"
       role="main"
       sx={{
-        padding: 4,
         minHeight: '100vh',
+        paddingY: 0,
       }}
     >
       <Paper
         elevation={0}
         sx={{
-          padding: 4,
+          padding: 2,
           backgroundColor: 'background.paper',
         }}
       >
