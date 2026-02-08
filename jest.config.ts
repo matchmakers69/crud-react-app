@@ -35,6 +35,39 @@ const config: Config = {
     ],
   },
 
+  collectCoverageFrom: [
+    'src/**/*.{ts,tsx}',
+    '!src/**/*.d.ts',
+    '!src/main.tsx',
+    '!src/vite-env.d.ts',
+    '!src/test/**',
+    '!src/mocks/**',
+    '!src/App.tsx',
+    '!src/**/index.ts',
+    '!src/**/index.tsx',
+    // Infrastructure files - no business logic to test
+    '!src/App.tsx', // Entry point - only renders providers
+    '!src/**/index.ts', // Re-export barrel files
+    '!src/**/index.tsx',
+
+    // API layer - thin wrappers around fetch, tested via component integration
+    // These hooks have no business logic, only network calls handled by MSW in dev
+    '!src/api/hooks/**',
+
+    // Providers - configuration and setup files
+    '!src/providers/**',
+  ],
+  coverageReporters: ['text', 'lcov', 'html'],
+
+  coverageThreshold: {
+    global: {
+      statements: 80,
+      branches: 75,
+      functions: 80,
+      lines: 80,
+    },
+  },
+
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@test/(.*)$': '<rootDir>/src/test/$1',
