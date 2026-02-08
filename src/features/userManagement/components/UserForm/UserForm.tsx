@@ -11,6 +11,7 @@ interface UserFormProps {
 const UserForm = ({ user, onCancel, onSuccess }: UserFormProps) => {
   const {
     register,
+    watch,
     handleSubmit,
     errors,
     isSubmitting,
@@ -52,6 +53,11 @@ const UserForm = ({ user, onCancel, onSuccess }: UserFormProps) => {
               fullWidth
               error={Boolean(errors.firstName)}
               helperText={errors.firstName?.message}
+              slotProps={{
+                inputLabel: {
+                  shrink: !!watch('firstName'),
+                },
+              }}
             />
 
             <TextField
@@ -61,6 +67,11 @@ const UserForm = ({ user, onCancel, onSuccess }: UserFormProps) => {
               required
               error={Boolean(errors.lastName)}
               helperText={errors.lastName?.message}
+              slotProps={{
+                inputLabel: {
+                  shrink: !!watch('lastName'),
+                },
+              }}
             />
 
             <TextField

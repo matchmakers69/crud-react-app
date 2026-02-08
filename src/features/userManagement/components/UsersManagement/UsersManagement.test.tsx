@@ -1,12 +1,19 @@
 import '@testing-library/jest-dom'
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { renderWithProviders } from '@/test/test-utils'
 import UsersManagement from './UsersManagement'
+import userEvent from '@testing-library/user-event'
 
 const mockUseUsersQuery = jest.fn()
 
 jest.mock('@/api/hooks/useUsers', () => ({
   useCreateUserMutation: () => ({
+    mutateAsync: jest.fn().mockResolvedValue({ id: 'jfjvpfjv' }),
+    isPending: false,
+    isError: false,
+    error: null,
+  }),
+  useUpdateUserMutation: () => ({
     mutateAsync: jest.fn().mockResolvedValue({ id: 'jfjvpfjv' }),
     isPending: false,
     isError: false,
@@ -91,5 +98,69 @@ describe('UserManagement', () => {
 
       expect(screen.getByText(/No users found/i)).toBeVisible()
     })
+  })
+  describe('Edit functionality', () => {
+    it('should switch to edit mode when edit button clicked', async () => {
+      const user = userEvent.setup()
+
+      renderWithProviders(<UsersManagement />)
+
+      expect(screen.getByText('Add New User')).toBeInTheDocument()
+
+      const editButton = screen.getByLabelText('Edit user Doe')
+      await user.click(editButton)
+
+      await waitFor(() => {
+        expect(screen.getByText('Edit User')).toBeInTheDocument()
+      })
+
+      // Form should be pre-filled
+      expect(screen.getByLabelText(/First Name/i)).toHaveValue('John')
+      expect(screen.getByLabelText(/Last Name/i)).toHaveValue('Doe')
+      expect(screen.getByLabelText(/Date of Birth/i)).toHaveValue('1990-05-15')
+    })
+
+    it('should clear selected user when cancel clicked', async () => {
+      const user = userEvent.setup()
+
+      renderWithProviders(<UsersManagement />)
+
+      const editButton = screen.getByLabelText('Edit user Doe')
+      await user.click(editButton)
+
+      await waitFor(() => {
+        expect(screen.getByText('Edit User')).toBeInTheDocument()
+      })
+
+      const cancelButton = screen.getByRole('button', { name: /Cancel/i })
+      await user.click(cancelButton)
+
+      await waitFor(() => {
+        expect(screen.getByText('Add New User')).toBeInTheDocument()
+      })
+    })
+
+    it('should clear selected user after successful form submission', async () => {
+      const user = userEvent.setup()
+
+      renderWithProviders(<UsersManagement />)
+
+      const editButton = screen.getByLabelText('Edit user Doe')
+      await user.click(editButton)
+
+      await waitFor(() => {
+        expect(screen.getByText('Edit User')).toBeInTheDocument()
+      })
+
+      const submitButton = screen.getByRole('button', { name: /Save Changes/i })
+      await user.click(submitButton)
+
+      await waitFor(() => {
+        expect(screen.getByText('Add New User')).toBeInTheDocument()
+      })
+    })
+  })
+  describe('Delete functionality', () => {
+    // TODO
   })
 })

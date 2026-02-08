@@ -2,7 +2,8 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { userFormSchema, UserFormData } from '../validationSchemas/userForm.schema'
 import { User } from '@/api/interfaces/User'
-import { useCreateUserMutation } from '@/api/hooks/useUsers'
+import { useCreateUserMutation, useUpdateUserMutation } from '@/api/hooks/useUsers'
+import { useEffect } from 'react'
 
 interface UseUserFormProps {
   user?: User | null
@@ -13,10 +14,12 @@ interface UseUserFormProps {
 export const useUserForm = ({ user, onCancel, onSuccess }: UseUserFormProps) => {
   const isEditMode = !!user
   const createUser = useCreateUserMutation()
+  const updateUser = useUpdateUserMutation()
 
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
     reset,
   } = useForm<UserFormData>({
@@ -29,6 +32,22 @@ export const useUserForm = ({ user, onCancel, onSuccess }: UseUserFormProps) => 
     },
   })
 
+  useEffect(() => {
+    if (user) {
+      reset({
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        dateOfBirth: user.dateOfBirth?.slice(0, 10) ?? '',
+      })
+    } else {
+      reset({
+        firstName: '',
+        lastName: '',
+        dateOfBirth: '',
+      })
+    }
+  }, [user, reset])
+
   const onSubmitHandler = async (data: UserFormData) => {
     try {
       const userData = {
@@ -36,13 +55,10 @@ export const useUserForm = ({ user, onCancel, onSuccess }: UseUserFormProps) => 
         lastName: data.lastName,
         dateOfBirth: data.dateOfBirth,
       }
-      if (isEditMode) {
-        // TODO: useUpdateUser mutation
-        console.log('Update user:', userData)
+      if (isEditMode && user) {
+        await updateUser.mutateAsync({ id: user.id, data: userData })
       } else {
-        // Create new user
         await createUser.mutateAsync(userData)
-        console.log('User created:', userData)
       }
 
       reset()
@@ -59,12 +75,13 @@ export const useUserForm = ({ user, onCancel, onSuccess }: UseUserFormProps) => 
 
   return {
     register,
+    watch,
     handleSubmit: handleSubmit(onSubmitHandler),
     errors,
-    isSubmitting: isSubmitting || createUser.isPending,
+    isSubmitting: isSubmitting || createUser.isPending || updateUser.isPending,
     isEditMode,
     onCancel: onCancelHandler,
-    isError: createUser.isError,
-    error: createUser.error,
+    isError: createUser.isError || updateUser.isError,
+    error: createUser.error || updateUser.error,
   }
 }

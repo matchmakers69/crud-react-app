@@ -46,17 +46,28 @@ export const handlers = [
         },
       })
     }
-    await db.user.update({
-      where: {
-        id: {
-          equals: id,
-        },
-      },
+
+    // await db.user.update({
+    //   where: {
+    //     id: {
+    //       equals: id,
+    //     },
+    //   },
+    //   data: { firstName, lastName, dateOfBirth },
+    // })
+
+    // Return the updated user object instead of plain text message
+    // Frontend mutation expects JSON User object, not text/plain
+    // Returning text caused "Failed to execute 'json' on 'Response'" error
+    // because response.json() tried to parse "User ${id} edited" as JSON
+
+    const updatedUser = await db.user.update({
+      where: { id: { equals: id } },
       data: { firstName, lastName, dateOfBirth },
     })
 
     return HttpResponse.json(`User ${id} edited`, {
-      status: 204,
+      status: 200,
       headers: {
         'Content-Type': 'text/plain',
       },
