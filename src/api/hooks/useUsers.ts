@@ -50,3 +50,19 @@ export const useUpdateUserMutation = () => {
     },
   })
 }
+
+export const useDeleteUserMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (id: string): Promise<void> => {
+      const response = await fetch(`${API_URL}/users/${id}`, {
+        method: 'DELETE',
+      })
+      if (!response.ok) throw new Error('Failed to delete user')
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: USER_QUERY_KEYS.USER_LIST })
+    },
+  })
+}

@@ -19,9 +19,10 @@ import { useUsersQuery } from '@/api/hooks/useUsers'
 interface UsersTableTableProps {
   onEdit?: (user: User) => void
   onDelete?: (user: User) => void
+  deletingUserId?: string | null
 }
 
-const UsersTable = ({ onEdit, onDelete }: UsersTableTableProps) => {
+const UsersTable = ({ onEdit, onDelete, deletingUserId }: UsersTableTableProps) => {
   const { data: users, isLoading, isError, error } = useUsersQuery()
 
   const formatDate = (dateString: string) => {
@@ -60,35 +61,38 @@ const UsersTable = ({ onEdit, onDelete }: UsersTableTableProps) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {users.map((user) => (
-            <TableRow key={user.id}>
-              <TableCell>{user.firstName || '-'}</TableCell>
-              <TableCell>{user.lastName}</TableCell>
-              <TableCell>{formatDate(user.dateOfBirth)}</TableCell>
-              <TableCell align="right">
-                <Tooltip title="Edit">
-                  <IconButton
-                    size="large"
-                    color="primary"
-                    onClick={() => onEdit?.(user)}
-                    aria-label={`Edit user ${user.lastName}`}
-                  >
-                    <EditIcon fontSize="large" />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Delete">
-                  <IconButton
-                    size="large"
-                    color="error"
-                    onClick={() => onDelete?.(user)}
-                    aria-label={`Delete user ${user.lastName}`}
-                  >
-                    <DeleteIcon fontSize="large" />
-                  </IconButton>
-                </Tooltip>
-              </TableCell>
-            </TableRow>
-          ))}
+          {users.map((user) => {
+            const isDeleting = deletingUserId === user.id
+            return (
+              <TableRow key={user.id} sx={{ opacity: isDeleting ? 0.5 : 1 }}>
+                <TableCell>{user.firstName || '-'}</TableCell>
+                <TableCell>{user.lastName}</TableCell>
+                <TableCell>{formatDate(user.dateOfBirth)}</TableCell>
+                <TableCell align="right">
+                  <Tooltip title="Edit">
+                    <IconButton
+                      size="large"
+                      color="primary"
+                      onClick={() => onEdit?.(user)}
+                      aria-label={`Edit user ${user.lastName}`}
+                    >
+                      <EditIcon fontSize="large" />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Delete">
+                    <IconButton
+                      size="large"
+                      color="error"
+                      onClick={() => onDelete?.(user)}
+                      aria-label={`Delete user ${user.lastName}`}
+                    >
+                      <DeleteIcon fontSize="large" />
+                    </IconButton>
+                  </Tooltip>
+                </TableCell>
+              </TableRow>
+            )
+          })}
         </TableBody>
       </Table>
     </TableContainer>

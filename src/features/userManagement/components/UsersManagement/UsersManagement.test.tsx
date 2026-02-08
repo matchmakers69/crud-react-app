@@ -5,6 +5,7 @@ import UsersManagement from './UsersManagement'
 import userEvent from '@testing-library/user-event'
 
 const mockUseUsersQuery = jest.fn()
+const mockDeleteUser = jest.fn()
 
 jest.mock('@/api/hooks/useUsers', () => ({
   useCreateUserMutation: () => ({
@@ -18,6 +19,13 @@ jest.mock('@/api/hooks/useUsers', () => ({
     isPending: false,
     isError: false,
     error: null,
+  }),
+  useDeleteUserMutation: () => ({
+    mutate: mockDeleteUser,
+    isPending: false,
+    isError: false,
+    error: null,
+    variables: null,
   }),
   useUsersQuery: () => mockUseUsersQuery(),
 }))
@@ -161,6 +169,27 @@ describe('UserManagement', () => {
     })
   })
   describe('Delete functionality', () => {
-    // TODO
+    it('should call delete mutation when delete button clicked', async () => {
+      const user = userEvent.setup()
+
+      renderWithProviders(<UsersManagement />)
+
+      const deleteButton = screen.getByLabelText('Delete user Doe')
+      await user.click(deleteButton)
+
+      expect(mockDeleteUser).toHaveBeenCalledTimes(1)
+      expect(mockDeleteUser).toHaveBeenCalledWith('1')
+    })
+    it('should call delete mutation with correct ID for second user', async () => {
+      const user = userEvent.setup()
+
+      renderWithProviders(<UsersManagement />)
+
+      const deleteButton = screen.getByLabelText('Delete user Smith')
+      await user.click(deleteButton)
+
+      expect(mockDeleteUser).toHaveBeenCalledTimes(1)
+      expect(mockDeleteUser).toHaveBeenCalledWith('2')
+    })
   })
 })
